@@ -54,7 +54,24 @@ window.SITE_CONFIG = {
     soundOffNote: "只保留画面",
     enter: "进入档案馆",
     imageCaption: "作品档案 / 入口",
-    imageMeta: "A BIRD IN TIME / 12:00"
+    imageMeta: "A BIRD IN TIME / 12:00",
+    gallery: [
+      {
+        image: "assets/img/work-bird.jpg",
+        alt: "白鸟、旧钟、蓝色星球与红色颜料组成的超现实拼贴",
+        meta: "A BIRD IN TIME / 12:00"
+      },
+      {
+        image: "assets/img/work-bird-2.jpg",
+        alt: "白鸟与旧钟 II：白鸟、钟面、蓝色地球与红色颜料的拼贴",
+        meta: "A BIRD IN TIME / II"
+      },
+      {
+        image: "assets/img/work-bird-3.jpg",
+        alt: "白鸟与旧钟 III：红蓝错位的白鸟、时钟与地球",
+        meta: "A BIRD IN TIME / III"
+      }
+    ]
   },
 
   audio: {

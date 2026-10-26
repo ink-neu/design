@@ -1230,13 +1230,113 @@
     });
   }
 
+  function initEntryArt() {
+    const visual = $(".entry__visual");
+    const art = $("#entry-art");
+    const trigger = $("#entry-art-trigger");
+    const tiles = $("#entry-tiles");
+    if (!visual || !art || !trigger || !tiles) return;
+    const gallery = (cfg.entry.gallery && cfg.entry.gallery.length)
+      ? cfg.entry.gallery
+      : [{ image: cfg.entry.image, alt: cfg.entry.imageAlt, meta: cfg.entry.imageMeta }];
+    if (gallery.length < 2) {
+      trigger.hidden = true;
+      return;
+    }
+    let index = 0;
+    let animating = false;
+    gallery.forEach((item) => {
+      if (item && item.image) {
+        const preload = new Image();
+        preload.src = item.image;
+      }
+    });
+
+    function renderImage(nextIndex) {
+      const item = gallery[nextIndex % gallery.length];
+      index = nextIndex % gallery.length;
+      art.src = item.image;
+      art.alt = item.alt || "";
+      setText("entry-image-meta", item.meta || cfg.entry.imageMeta);
+      trigger.setAttribute("aria-label", `Show next entry image (${gallery[(index + 1) % gallery.length].alt || "next"})`);
+    }
+
+    function clearTiles() {
+      tiles.classList.remove("is-active");
+      tiles.replaceChildren();
+      art.style.opacity = "";
+      trigger.disabled = false;
+    }
+
+    function buildTiles() {
+      const rect = visual.getBoundingClientRect();
+      const imageWidth = art.naturalWidth;
+      const imageHeight = art.naturalHeight;
+      const source = art.currentSrc || art.src;
+      if (!imageWidth || !imageHeight || !source) return false;
+      const cell = Math.max(14, Math.round(rect.width / 22));
+      const columns = Math.ceil(rect.width / cell);
+      const rows = Math.ceil(rect.height / cell);
+      const scale = Math.max(rect.width / imageWidth, rect.height / imageHeight);
+      const backgroundWidth = imageWidth * scale;
+      const backgroundHeight = imageHeight * scale;
+      const offsetX = (rect.width - backgroundWidth) / 2;
+      const offsetY = (rect.height - backgroundHeight) / 2;
+      const fragment = document.createDocumentFragment();
+      for (let row = 0; row < rows; row += 1) {
+        for (let column = 0; column < columns; column += 1) {
+          const x = column * cell;
+          const y = row * cell;
+          const tile = document.createElement("span");
+          tile.className = "entry-tile";
+          tile.style.left = `${x}px`;
+          tile.style.top = `${y}px`;
+          tile.style.width = `${cell + 0.8}px`;
+          tile.style.height = `${cell + 0.8}px`;
+          tile.style.backgroundImage = `url("${source}")`;
+          tile.style.backgroundSize = `${backgroundWidth}px ${backgroundHeight}px`;
+          tile.style.backgroundPosition = `${-(x - offsetX)}px ${-(y - offsetY)}px`;
+          tile.style.setProperty("--tx", `${((x + cell / 2) - rect.width / 2) * 0.45 + (Math.random() * 50 - 25)}px`);
+          tile.style.setProperty("--ty", `${((y + cell / 2) - rect.height / 2) * 0.35 + (Math.random() * 60 - 30)}px`);
+          tile.style.setProperty("--rot", `${Math.random() * 14 - 7}deg`);
+          tile.style.setProperty("--delay", `${Math.round((row / Math.max(1, rows)) * 100 + Math.random() * 70)}ms`);
+          fragment.append(tile);
+        }
+      }
+      tiles.replaceChildren(fragment);
+      void tiles.offsetWidth;
+      tiles.classList.add("is-active");
+      return true;
+    }
+
+    trigger.addEventListener("click", () => {
+      if (animating) return;
+      animating = true;
+      trigger.disabled = true;
+      if (reducedMotion.matches || !buildTiles()) {
+        renderImage(index + 1);
+        clearTiles();
+        animating = false;
+        return;
+      }
+      art.style.opacity = "0";
+      window.setTimeout(() => {
+        renderImage(index + 1);
+        clearTiles();
+        animating = false;
+      }, 900);
+    });
+
+    renderImage(0);
+  }
+
   function renderFutureVideos() {
     const root = $("#future-motion");
     const grid = $("#future-motion-grid");
     const videos = (cfg.future && cfg.future.videos) || [];
     if (!root || !grid || !videos.length) return;
-    setText("future-motion-eyebrow", cfg.future.motionEyebrow || "MOTION STUDIES / 动态新作");
-    setText("future-motion-title", cfg.future.motionTitle || "会动的，先放在这里。");
+    setText("future-motion-eyebrow", cfg.future.motionEyebrow || "MOTION STUDIES / MOTION");
+    setText("future-motion-title", cfg.future.motionTitle || "Motion studies");
     grid.replaceChildren();
     videos.forEach((item) => {
       const figure = document.createElement("figure");
@@ -1249,7 +1349,7 @@
       video.autoplay = true;
       video.playsInline = true;
       video.preload = "metadata";
-      video.setAttribute("aria-label", item.alt || item.title || "动态作品");
+      video.setAttribute("aria-label", item.alt || item.title || "Motion study");
       const body = document.createElement("figcaption");
       body.className = "future-video__caption";
       const title = document.createElement("span");
@@ -1925,6 +2025,7 @@
 
   function init() {
     populateContent();
+    initEntryArt();
     initFragments();
     initOpenCall();
     initDiscussion();
