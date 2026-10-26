@@ -10,7 +10,7 @@ Morin 的私人视觉档案馆。一个无框架、无构建步骤的静态个�
 | --- | --- |
 | ![入场验证](docs/entry.jpg) | ![手机端首屏](docs/mobile.jpg) |
 
-| 新作 · 留白 | 讨论 · 待接线 |
+| 新作 · 留白 | 讨论 · 已开放 |
 | --- | --- |
 | ![新作留白](docs/future.jpg) | ![讨论区](docs/discussion.jpg) |
 
@@ -18,9 +18,13 @@ Morin 的私人视觉档案馆。一个无框架、无构建步骤的静态个�
 
 ## 现在就可以看
 
-当前预览地址：**http://127.0.0.1:4173**
+正式地址：**https://ink-neu.github.io/design/**
 
-以后本地预览：
+GitHub 仓库：**https://github.com/ink-neu/design**
+
+本地预览：**http://127.0.0.1:4173**
+
+本地启动方式：
 
 1. 双击项目根目录里的 **`preview.cmd`**；或
 2. 在终端运行：
@@ -32,7 +36,7 @@ python -m http.server 4173 --bind 127.0.0.1
 
 然后打开 <http://127.0.0.1:4173>。
 
-> 请通过本地服务器访问，不要直接双击 `index.html`。页面本身仍能打开，但 `file://` 会阻止自定义字体加载，排版会退化为系统字体。
+> 正式站由 GitHub Pages 自动构建。请通过服务器地址访问，不要直接双击 `index.html`；`file://` 会阻止自定义字体加载。
 
 ---
 
@@ -54,7 +58,7 @@ python -m http.server 4173 --bind 127.0.0.1
 - **3 秒轮播**：4 张真实作品图自动轮换，可手动切换；打开作品详情或切换到后台时暂停。
 - **作品档案**：白鸟、INK、门、绘者四件作品进入非对称作品网格和全屏详情。
 - **新作留白**：独立的 FORTHCOMING 区块，目前只有一个「预留 / RESERVED」的空画框。
-- **讨论区结构**：已经完成论坛样式与 GitHub Issues 读取逻辑；填入一个公开仓库后即可显示真实话题并允许跳转发帖。
+- **讨论区**：已经接入 `ink-neu/design` 的 GitHub Issues（标签 `discussion`），是真实可用的公开讨论区；当前还没有第一条话题。
 - **联系标题**：大标题下现在是「雨是公平的，会下给富人，也会下给穷人。」
 - **移动端**：五栏导航、菜单、入口、轮播、作品网格与详情均单独适配。
 
@@ -69,37 +73,36 @@ python -m http.server 4173 --bind 127.0.0.1
 - 四件作品的标题（白鸟与旧钟 / INK / 门 / 绘者）、年份、类别和描述，都是按画面内容代填的**工作版**。
 - 关于页文案、事实、邮箱 `hello@morin.art`、社交链接仍为占位内容。
 - 新作区按你的要求保持为空。
-- 讨论区还没有接入 GitHub 仓库，因此现在显示「讨论区正在接线」的待接线状态，不会显示假帖子。
+- 讨论区已接入 `ink-neu/design`，但还没有第一条话题；点击「发起话题」会打开带 `discussion` 标签的 GitHub Issue。
 
 ---
 
-## 讨论区如何真正开放
+## 讨论区怎么用
 
-讨论区使用 **GitHub Issues** 作为轻量论坛：网站读取公开话题列表，点击任意话题会进入 GitHub 查看和回复，点「发起话题」会打开已配置仓库的新 Issue 页面。这样不需要额外数据库或服务器，也不会产生假的本地留言。
+讨论区使用 **GitHub Issues** 作为轻量论坛，已经接在：
 
-### 步骤
+- 仓库：`ink-neu/design`
+- 标签：`discussion`
+- 在站内点击「发起话题」→ 打开 GitHub 新建 Issue 页面（自动带上 `discussion` 标签）
+- 已有话题会显示标题、作者、回复数和更新时间；点击任意话题会进入 GitHub 回复
 
-1. 在你的 GitHub 账号下新建一个**公开仓库**，例如 `chaowendao-forum`；保持 Issues 开启。
-2. 打开 `site.config.js`，填写：
+没有话题时，讨论区会显示「还没有人开口。第一张椅子，留给你。」
+
+当前配置：
 
 ```js
 discussion: {
   // ...
   github: {
-    owner: "你的 GitHub 用户名",
-    repo: "chaowendao-forum",
-    label: "",     // 留空 = 读取全部 Issues；也可以建一个 "discussion" 标签并填进来
+    owner: "ink-neu",
+    repo: "design",
+    label: "discussion",
     limit: 6
   }
 }
 ```
 
-3. 重新部署或在本地刷新。
-4. 讨论区会变成真实话题列表，顶部出现「发起话题」，每个话题显示作者、回复数与更新时间。
-
-也可以直接把仓库链接发我，我来填好并重新部署。
-
-> 如果希望回复也完全留在站内、而不是跳到 GitHub，就需要数据库和登录后端；目前这版选择的是无后端、真实可用的 GitHub 方案。
+> 这是无数据库方案：登录、发帖和回复都使用 GitHub。若以后希望完全站内回复，需要另外接登录和数据库。
 
 ---
 
@@ -206,12 +209,12 @@ contact: {
 ### 发布前一定要改
 
 - [ ] `contact.email`：当前是占位邮箱 `hello@morin.art`。
-- [ ] `meta.siteUrl`：填写正式域名，分享卡片与 canonical 才能正确指向。
+- [x] `meta.siteUrl`：已设为 `https://ink-neu.github.io/design/`。
 - [ ] `meta.title` / `meta.description`。
 - [ ] 四件作品的正式标题、年份、职责、描述。
 - [ ] 关于页个人介绍、事实与照片。
 - [ ] 社交链接、合作状态。
-- [ ] 讨论区的 GitHub 仓库。
+- [x] 讨论区 GitHub 仓库：`ink-neu/design`，标签 `discussion`。
 - [ ] 确认 Weird Inside 音乐的公开播放授权。
 
 ---
@@ -220,27 +223,16 @@ contact: {
 
 纯静态站，不需要构建或后端。
 
-### Vercel
+### GitHub Pages（当前）
 
-- Framework Preset: **Other**
-- Build Command: 留空
-- Output Directory: `.`
+- 仓库：`ink-neu/design`
+- 分支：`main` / root
+- 正式地址：**https://ink-neu.github.io/design/**
+- 已启用 `.nojekyll`，推送 `main` 后自动重新构建
 
-### GitHub Pages
+### 其他平台
 
-把文件夹内容推到仓库根目录，Settings → Pages → Deploy from a branch → `main` / root。
-
-### Netlify Drop
-
-把整个 `chaowendao` 文件夹拖到 <https://app.netlify.com/drop>。
-
-### Cloudflare Pages
-
-- Framework preset: **None**
-- Build command: 留空
-- Build output directory: `/`
-
-所有路径都是相对路径，可以放在域名根目录或子目录。
+也可以部署到 Vercel、Netlify Drop 或 Cloudflare Pages；所有路径都是相对路径，可放在域名根目录或子目录。
 
 ---
 

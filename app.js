@@ -1211,10 +1211,8 @@
     container.hidden = false;
     setText("discussion-status", "OPEN TABLE / 讨论开放");
 
-    const newParams = new URLSearchParams();
-    if (github.label) newParams.set("labels", github.label);
     if (newTopic) {
-      newTopic.href = `${repoUrl}/issues/new${newParams.toString() ? `?${newParams}` : ""}`;
+      newTopic.href = buildNewIssueUrl(repoUrl, github);
       newTopic.hidden = false;
     }
 
@@ -1223,6 +1221,12 @@
     loading.textContent = "正在读取讨论…";
     container.replaceChildren(loading);
     loadDiscussionThreads(container, github, repoUrl);
+  }
+
+  function buildNewIssueUrl(repoUrl, github) {
+    const params = new URLSearchParams();
+    if (github && github.label) params.set("labels", github.label);
+    return `${repoUrl}/issues/new${params.toString() ? `?${params}` : ""}`;
   }
 
   function formatDiscussionDate(value) {
@@ -1305,7 +1309,7 @@
         copy.textContent = cfg.discussion.emptyText || "第一张椅子，留给你。";
         const cta = document.createElement("a");
         cta.className = "text-link";
-        cta.href = `${repoUrl}/issues/new`;
+        cta.href = buildNewIssueUrl(repoUrl, github);
         cta.target = "_blank";
         cta.rel = "noopener noreferrer";
         cta.textContent = cfg.discussion.newTopic || "发起话题";

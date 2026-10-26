@@ -191,8 +191,7 @@ window.SITE_CONFIG = {
     emptyTitle: "还没有人开口。",
     emptyText: "第一张椅子，留给你。",
     allTopics: "在 GitHub 查看全部",
-    // 建一个公开仓库并开启 Issues，把 owner / repo 填进来即可变成真论坛。
-    // 建议单独建一个只用于讨论的仓库，例如 chaowendao-forum。
+    // 已接入 ink-neu/design 的 Issues，使用 discussion 标签筛选话题。
     github: {
       owner: "ink-neu",
       repo: "design",
@@ -244,6 +243,7 @@ window.SITE_CONFIG = {
     backToTop: "回到顶部"
   }
 };
+
 
 
 
