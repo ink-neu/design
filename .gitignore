@@ -1,0 +1,8 @@
+﻿node_modules/
+.preview-tools/
+preview/
+preview-entry.png
+.DS_Store
+Thumbs.db
+.vercel/
+.vercel
