@@ -7,10 +7,14 @@
  */
 window.SITE_CONFIG = {
   meta: {
-    title: "朝闻道 — Morin 的视觉档案馆",
-    description: "在雨里，造一些会发光的世界。拼贴、绘画与未完成的未来，Morin 的私人视觉作品档案馆。",
+    title: "朝闻道 — to the Endless nameless.",
+    description: "在雨里，造一些会发光的世界。拼贴、绘画、来稿与未完成的未来，一个向所有无名者敞开的视觉档案馆。",
     ogImage: "assets/img/og.jpg",
     siteUrl: "https://ink-neu.github.io/design/"
+  },
+
+  brand: {
+    signature: "to the Endless nameless."
   },
 
   identity: {
@@ -25,7 +29,7 @@ window.SITE_CONFIG = {
     image: "assets/img/work-bird.jpg",
     imageAlt: "白鸟、旧钟、蓝色星球与红色颜料组成的超现实拼贴",
     protocol: "SECURE ENTRY / 身份验证",
-    eyebrow: "A PRIVATE ARCHIVE BY MORIN",
+    eyebrow: "TO THE ENDLESS NAMELESS",
     title: "朝闻道",
     roman: "ZHAOWENDAO",
     quote: "朝闻道，夕死可矣。",
@@ -124,6 +128,7 @@ window.SITE_CONFIG = {
         category: "综合材料 / 拼贴",
         description: "白鸟、旧钟、地图与蓝色星球在同一张纸上相遇。红色像一次意外，也像一枚印章。",
         image: "assets/img/work-bird.jpg",
+        prompt: "A surrealist mixed-media collage on aged cream paper: a white goose with blue contour lines, a vintage clock face, a cracked blue globe, red pigment splashes, botanical and anatomical fragments, a small silver fish on a plate, torn typography, muted teal and vermilion palette, quiet cinematic still life, fine paper grain, high detail.",
         alt: "白鸟与旧钟：鸟、钟表、地球与红色颜料的拼贴",
         ratio: "16 / 10",
         position: "center"
@@ -136,6 +141,7 @@ window.SITE_CONFIG = {
         category: "字体实验 / 视觉识别",
         description: "墨迹穿过字母，留下名字的轮廓。黑白之间，只保留一点橙红。",
         image: "assets/img/work-ink.jpg",
+        prompt: "An editorial typographic experiment: the word INK in heavy black letters dissolving into glossy black ink, a single drop of vermilion, off-white paper, high contrast, macro ink texture, art direction poster, minimal composition.",
         alt: "INK：黑白墨迹与橙红色滴的字体实验",
         ratio: "1 / 1",
         position: "center"
@@ -148,6 +154,7 @@ window.SITE_CONFIG = {
         category: "数字绘画 / 概念场景",
         description: "沿着发光的水面走向一扇门，门后是另一片海与日落。",
         image: "assets/img/work-door.jpg",
+        prompt: "A lone figure in a dark suit walking across a path of reflective mosaic shards toward a glowing rectangular doorway standing in the sea, a huge low sun on the horizon, teal and burnt orange sky, retro-futurist cinematic scene, atmospheric, wide shot.",
         alt: "门：人物沿着彩色碎片路径走向海上的发光门",
         ratio: "4 / 5",
         position: "center"
@@ -160,11 +167,138 @@ window.SITE_CONFIG = {
         category: "角色插画 / 视觉叙事",
         description: "颜色从衣袖、画笔和空气里溅开。她站在未完成的画面中央。",
         image: "assets/img/work-painter.jpg",
+        prompt: "Anime-inspired editorial illustration of a silver-haired painter in flowing white robes, surrounded by suspended paint strokes and blurred typography, holding a brush that blooms into a flower, dynamic pose, saturated cyan and coral palette, soft grain, high detail.",
         alt: "绘者：银白发角色在颜料与字母之间作画",
         ratio: "5 / 4",
         position: "center"
       }
     ]
+  },
+
+  fragment: {
+    eyebrow: "LIVE FRAGMENTS / 作品切片",
+    title: "把一张画，\n拆回一句话。",
+    text: "每四秒，窗口会裁切到下一件作品。点击画面，它会碎成像素，露出生成它的提示词。",
+    hint: "点击拆解 / CLICK TO REVEAL PROMPT",
+    promptLabel: "PROMPT / 提示词",
+    copy: "复制提示词",
+    copied: "已复制",
+    close: "返回画面",
+    interval: 4200
+  },
+
+  openCall: {
+    eyebrow: "OPEN CALL / 来稿",
+    title: "不只属于我。\n把你也造的世界，放进来。",
+    intro: "「朝闻道」不只收藏我的世界。这里也为别人留一盏灯：把你造过的画面投进来，让它在雨里被看见。",
+    note: "来稿经馆主审核后收录。你的名字与提示词会一起保留。",
+    form: {
+      eyebrow: "SUBMISSION / 投稿",
+      title: "投递一件作品",
+      intro: "选择一张图，填下它的名字和提示词。提交后会打开 GitHub 投稿页；把图片附在正文里，经审核后收录。",
+      choose: "选择图片 / DROP AN IMAGE",
+      change: "换一张图片",
+      author: "作者",
+      workTitle: "作品名",
+      year: "年份",
+      prompt: "提示词 / 作品说明",
+      contact: "联系方式（可选）",
+      submit: "在 GitHub 继续投稿",
+      localNote: "图片只在本机预览，不会上传到本站服务器；正式图片需要在 GitHub 投稿页中附加。",
+      emailFallback: "没有 GitHub？发邮件投稿",
+      status: "投稿页已打开。请把图片拖进正文，然后提交。",
+      error: "请先选择图片，并填写作者、作品名与提示词。"
+    },
+    github: {
+      owner: "ink-neu",
+      repo: "design",
+      submissionLabel: "submission",
+      acceptedLabel: "accepted",
+      limit: 12
+    },
+    gallery: {
+      eyebrow: "COMMUNITY / 已收录",
+      emptyTitle: "还没有收录来稿。",
+      emptyText: "第一件来自别处的世界，会出现在这里。"
+    }
+  },
+
+  auth: {
+    supabaseUrl: "https://roclabcyhwcseswvonrx.supabase.co",
+    supabaseKey: "sb_publishable_g5Ftk5JFEBv5bYyKV5mliQ_9BFicj4V",
+    siteUrl: "https://ink-neu.github.io/design/",
+    defaultName: "Nameless.",
+    defaultAvatarStyle: "rain",
+    avatarStyles: [
+      { id: "rain", label: "雨", bg: "#041b1d", fg: "#71ded6", accent: "#ff7b32" },
+      { id: "ember", label: "烬", bg: "#24100a", fg: "#ffb36d", accent: "#ff7b32" },
+      { id: "paper", label: "纸", bg: "#e8dfcf", fg: "#253a38", accent: "#c85c2a" },
+      { id: "moss", label: "苔", bg: "#122018", fg: "#a6d8a0", accent: "#ffd27a" },
+      { id: "violet", label: "夜", bg: "#191426", fg: "#c4b5fd", accent: "#71ded6" },
+      { id: "mono", label: "白", bg: "#0b0f10", fg: "#d6d6d6", accent: "#ffffff" }
+    ]
+  },
+
+  comments: {
+    eyebrow: "OPEN TABLE / 留言",
+    status: "OPEN TABLE / 留言开放",
+    intro: "留下一个问题、一个想法，或一段雨夜。匿名也能发言；想留下名字时，再登录。",
+    placeholder: "写下你想留下的……",
+    submit: "发布留言",
+    submitting: "正在发布…",
+    emptyTitle: "还没有人开口。",
+    emptyText: "第一张椅子，留给你。",
+    countSuffix: "MESSAGES",
+    guestNote: "匿名发言 · 名字会显示为 Nameless.",
+    anonymousNote: "你正以 Nameless. 发言。登录后可保留自己的名字。",
+    memberNote: "以你的名字发言。",
+    login: "登录 / 留下名字",
+    upgrade: "登录，保留这个名字",
+    loading: "正在读取留言…",
+    error: "留言暂时读不到，请稍后再试。",
+    postError: "发布失败，请稍后再试。",
+    posted: "留言已发布。",
+    delete: "删除",
+    confirmDelete: "删除这条留言？",
+    refresh: "刷新",
+    genderLabels: {
+      "": "不填写",
+      female: "女性",
+      male: "男性",
+      nonbinary: "非二元",
+      other: "其他"
+    },
+    account: {
+      eyebrow: "ACCOUNT / 账号",
+      guestTitle: "留下你的名字。",
+      guestText: "匿名也可以直接留言，名字会显示为 Nameless.。登录后会得到一个可以保存名字、代码头像和性别的账号。",
+      emailLabel: "邮箱",
+      emailPlaceholder: "you@example.com",
+      sendLink: "发送登录链接",
+      sending: "正在发送…",
+      sent: "登录链接已发送，请去邮箱点击。",
+      anonymous: "先以 Nameless. 继续",
+      anonymousStatus: "你现在是 Nameless.，可以直接留言。",
+      anonymousTitle: "Nameless.",
+      anonymousText: "这是一个匿名身份。登录后，名字和留言都会保留。",
+      upgradeTitle: "保存你的账号",
+      upgradeText: "输入邮箱，把这个匿名身份升级成你的账号。",
+      upgradeButton: "发送保存链接",
+      upgradeSent: "确认链接已发送，请去邮箱点击。",
+      profileTitle: "你的账号",
+      nameLabel: "名字",
+      namePlaceholder: "你的名字",
+      genderLabel: "性别（可选）",
+      avatarLabel: "代码头像",
+      reroll: "换一组代码",
+      save: "保存资料",
+      saving: "正在保存…",
+      saved: "资料已保存。",
+      logout: "退出登录",
+      close: "关闭",
+      loginError: "登录失败，请检查邮箱后再试。",
+      saveError: "保存失败，请稍后再试。"
+    }
   },
 
   future: {
@@ -179,7 +313,7 @@ window.SITE_CONFIG = {
   discussion: {
     eyebrow: "OPEN TABLE / 讨论",
     title: "留一盏灯，\n给路过的人。",
-    intro: "这里会成为一个公开的讨论区。留下一个问题、一个想法，或一段雨夜。",
+    intro: "留下一个问题、一个想法，或一段雨夜。匿名也能发言；想留下名字时，再登录。",
     boardLabel: "GITHUB ISSUES / 公开讨论",
     boardStatus: "WAITING FOR SIGNAL / 等待接线",
     fallbackKicker: "THE TABLE IS ALMOST OPEN",
@@ -238,8 +372,8 @@ window.SITE_CONFIG = {
   },
 
   footer: {
-    copyright: "© 2026 MORIN. ALL WORLDS RESERVED.",
-    credit: "SOUNDTRACK / WEIRD INSIDE · DESIGNED IN THE RAIN",
+    copyright: "© 2026 TO THE ENDLESS NAMELESS. ALL WORLDS RESERVED.",
+    credit: "TO THE ENDLESS NAMELESS · SOUNDTRACK / WEIRD INSIDE",
     backToTop: "回到顶部"
   }
 };

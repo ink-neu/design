@@ -233,6 +233,38 @@
       });
     }
 
+    // New brand signature and fragment / open-call copy
+    document.querySelectorAll(".brand__text small, .entry__brand small").forEach((el) => {
+      el.textContent = (cfg.brand && cfg.brand.signature) || "to the Endless nameless.";
+    });
+    setText("fragment-eyebrow", cfg.fragment.eyebrow);
+    setText("fragment-copy-title", cfg.fragment.title);
+    setText("fragment-copy-text", cfg.fragment.text);
+    setText("fragment-hint", cfg.fragment.hint);
+    setText("fragment-prompt-label", cfg.fragment.promptLabel);
+    setText("fragment-copy", cfg.fragment.copy);
+    setText("open-call-eyebrow", cfg.openCall.eyebrow);
+    renderTitleLines($("#open-call-title"), cfg.openCall.title);
+    setText("open-call-intro", cfg.openCall.intro);
+    setText("open-call-note", cfg.openCall.note);
+    setText("submission-eyebrow", cfg.openCall.form.eyebrow);
+    setText("submission-title", cfg.openCall.form.title);
+    setText("submission-intro", cfg.openCall.form.intro);
+    setText("submission-choose", cfg.openCall.form.choose);
+    setText("submission-change", cfg.openCall.form.change);
+    setText("submission-local-note", cfg.openCall.form.localNote);
+    setText("submission-submit-label", cfg.openCall.form.submit);
+    setText("submission-email-label", cfg.openCall.form.emailFallback);
+    setText("community-eyebrow", cfg.openCall.gallery.eyebrow);
+    setText("community-empty-title", cfg.openCall.gallery.emptyTitle);
+    setText("community-empty-text", cfg.openCall.gallery.emptyText);
+    const submissionEmail = $("#submission-email");
+    if (submissionEmail) {
+      const subject = encodeURIComponent("朝闻道 · 作品投稿");
+      const body = encodeURIComponent("作品名：\n作者：\n年份：\n提示词 / 作品说明：\n\n请附上作品图片。");
+      submissionEmail.href = `mailto:${cfg.contact.email}?subject=${subject}&body=${body}`;
+    }
+
     // Footer
     setText("footer-copyright", cfg.footer.copyright);
     setText("footer-credit", cfg.footer.credit);
@@ -1196,6 +1228,441 @@
     });
   }
 
+  function initFragments() {
+    const viewer = $("#fragment-viewer");
+    const frame = $("#fragment-frame");
+    const image = $("#fragment-image");
+    const trigger = $("#fragment-trigger");
+    const tiles = $("#fragment-tiles");
+    const prompt = $("#fragment-prompt");
+    const dots = $("#fragment-dots");
+    const promptTitle = $("#fragment-prompt-title");
+    const promptText = $("#fragment-prompt-text");
+    const promptMeta = $("#fragment-prompt-meta");
+    const copyButton = $("#fragment-copy");
+    const closeButton = $("#fragment-close");
+    if (!viewer || !frame || !image || !trigger || !tiles || !prompt || !dots) return;
+
+    const items = (cfg.works.items || []).filter((item) => item && item.image && item.prompt);
+    if (!items.length) return;
+
+    const local = { index: 0, open: false, animating: false, visible: false, timer: null, focus: null };
+    const interval = Math.max(2400, Number(cfg.fragment && cfg.fragment.interval) || 4200);
+
+    items.forEach((item, index) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `查看第 ${index + 1} 件作品：${item.title}`);
+      dot.addEventListener("click", () => {
+        if (local.open || local.animating) return;
+        show(index);
+        startAuto();
+      });
+      dots.append(dot);
+    });
+
+    function show(index) {
+      local.index = (index + items.length) % items.length;
+      const item = items[local.index];
+      image.src = item.image;
+      image.alt = item.alt || item.title;
+      image.style.objectPosition = item.position || "center";
+      setText("fragment-slide-title", item.title);
+      setText("fragment-en", item.en || "");
+      setText("fragment-count", `${pad(local.index + 1)} / ${pad(items.length)}`);
+      promptTitle.textContent = item.title;
+      promptText.textContent = item.prompt;
+      promptMeta.textContent = `${item.category || ""}${item.year ? " / " + item.year : ""}`;
+      trigger.setAttribute("aria-label", `拆解「${item.title}」，查看提示词`);
+      Array.from(dots.children).forEach((dot, dotIndex) => {
+        dot.classList.toggle("is-active", dotIndex === local.index);
+        dot.setAttribute("aria-current", dotIndex === local.index ? "true" : "false");
+      });
+    }
+
+    function stopAuto() {
+      if (local.timer) {
+        window.clearTimeout(local.timer);
+        local.timer = null;
+      }
+    }
+
+    function startAuto() {
+      stopAuto();
+      if (local.open || local.animating || !local.visible || document.hidden || reducedMotion.matches) return;
+      local.timer = window.setTimeout(() => {
+        local.timer = null;
+        show(local.index + 1);
+        startAuto();
+      }, interval);
+    }
+
+    function buildTiles() {
+      const rect = frame.getBoundingClientRect();
+      const imageWidth = image.naturalWidth;
+      const imageHeight = image.naturalHeight;
+      const source = image.currentSrc || image.src;
+      if (!imageWidth || !imageHeight || !source) return false;
+
+      const cell = Math.max(14, Math.round(rect.width / 22));
+      const columns = Math.ceil(rect.width / cell);
+      const rows = Math.ceil(rect.height / cell);
+      const scale = Math.max(rect.width / imageWidth, rect.height / imageHeight);
+      const backgroundWidth = imageWidth * scale;
+      const backgroundHeight = imageHeight * scale;
+      const offsetX = (rect.width - backgroundWidth) / 2;
+      const offsetY = (rect.height - backgroundHeight) / 2;
+      const fragment = document.createDocumentFragment();
+
+      for (let row = 0; row < rows; row += 1) {
+        for (let column = 0; column < columns; column += 1) {
+          const x = column * cell;
+          const y = row * cell;
+          const tile = document.createElement("span");
+          tile.className = "fragment-tile";
+          tile.style.left = `${x}px`;
+          tile.style.top = `${y}px`;
+          tile.style.width = `${cell + 0.8}px`;
+          tile.style.height = `${cell + 0.8}px`;
+          tile.style.backgroundImage = `url("${source}")`;
+          tile.style.backgroundSize = `${backgroundWidth}px ${backgroundHeight}px`;
+          tile.style.backgroundPosition = `${-(x - offsetX)}px ${-(y - offsetY)}px`;
+          tile.style.setProperty("--tx", `${((x + cell / 2) - rect.width / 2) * 0.55 + (Math.random() * 60 - 30)}px`);
+          tile.style.setProperty("--ty", `${((y + cell / 2) - rect.height / 2) * 0.4 + (Math.random() * 80 - 40)}px`);
+          tile.style.setProperty("--rot", `${Math.random() * 16 - 8}deg`);
+          tile.style.setProperty("--delay", `${Math.round((row / Math.max(1, rows)) * 130 + Math.random() * 80)}ms`);
+          fragment.append(tile);
+        }
+      }
+
+      tiles.replaceChildren(fragment);
+      void tiles.offsetWidth;
+      tiles.classList.add("is-active");
+      return true;
+    }
+
+    function showPrompt() {
+      local.animating = false;
+      local.open = true;
+      stopAuto();
+      frame.classList.remove("is-deconstructing");
+      tiles.classList.remove("is-active");
+      tiles.replaceChildren();
+      prompt.hidden = false;
+      frame.classList.add("is-prompt-open");
+      trigger.disabled = true;
+      trigger.tabIndex = -1;
+      trigger.setAttribute("aria-expanded", "true");
+      closeButton.focus({ preventScroll: true });
+    }
+
+    function openPrompt() {
+      if (local.open || local.animating) return;
+      local.animating = true;
+      local.focus = document.activeElement;
+      stopAuto();
+      trigger.disabled = true;
+      if (reducedMotion.matches) {
+        showPrompt();
+        return;
+      }
+      frame.classList.add("is-deconstructing");
+      if (!buildTiles()) {
+        showPrompt();
+        return;
+      }
+      window.setTimeout(showPrompt, 980);
+    }
+
+    function closePrompt() {
+      prompt.hidden = true;
+      frame.classList.remove("is-prompt-open");
+      trigger.disabled = false;
+      trigger.tabIndex = 0;
+      trigger.setAttribute("aria-expanded", "false");
+      local.open = false;
+      local.animating = false;
+      trigger.focus({ preventScroll: true });
+      startAuto();
+    }
+
+    function copyPrompt() {
+      const value = promptText.textContent || "";
+      if (!value) return;
+      const original = (cfg.fragment && cfg.fragment.copy) || "复制提示词";
+      const done = (cfg.fragment && cfg.fragment.copied) || "已复制";
+      const fail = () => {
+        copyButton.textContent = "复制失败";
+        window.setTimeout(() => { copyButton.textContent = original; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(value).then(() => {
+          copyButton.textContent = done;
+          window.setTimeout(() => { copyButton.textContent = original; }, 1600);
+        }).catch(fail);
+      } else {
+        fail();
+      }
+    }
+
+    trigger.addEventListener("click", openPrompt);
+    closeButton.addEventListener("click", closePrompt);
+    copyButton.addEventListener("click", copyPrompt);
+    prompt.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closePrompt();
+      }
+    });
+
+    show(0);
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        local.visible = entries.some((entry) => entry.isIntersecting);
+        if (local.visible) startAuto();
+        else stopAuto();
+      }, { threshold: 0.25 });
+      observer.observe(viewer);
+    } else {
+      local.visible = true;
+      startAuto();
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stopAuto();
+      else startAuto();
+    });
+
+    items.slice(1).forEach((item) => {
+      const preload = new Image();
+      preload.src = item.image;
+    });
+  }
+
+  function initOpenCall() {
+    const form = $("#submission-form");
+    const fileInput = $("#submission-image");
+    const drop = $("#submission-drop");
+    const preview = $("#submission-preview");
+    const dropEmpty = $("#submission-drop-empty");
+    const dropChange = $("#submission-change");
+    const status = $("#submission-status");
+    if (!form || !fileInput || !drop || !preview || !status) return;
+
+    const github = (cfg.openCall && cfg.openCall.github) || {};
+    const configured = Boolean(github.owner && github.repo);
+    let selectedFile = null;
+    let previewUrl = "";
+
+    function setStatus(message, isError = false) {
+      status.textContent = message || "";
+      status.classList.toggle("is-error", Boolean(isError));
+    }
+
+    function handleFile(file) {
+      if (!file) return;
+      if (!file.type || !file.type.startsWith("image/")) {
+        setStatus("请选择 JPG、PNG 或 WEBP 图片。", true);
+        return;
+      }
+      selectedFile = file;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(file);
+      preview.src = previewUrl;
+      preview.hidden = false;
+      dropEmpty.hidden = true;
+      dropChange.hidden = false;
+      setStatus("");
+    }
+
+    fileInput.addEventListener("change", () => handleFile(fileInput.files && fileInput.files[0]));
+    drop.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    ["dragenter", "dragover"].forEach((eventName) => {
+      drop.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        drop.classList.add("is-dragging");
+      });
+    });
+    ["dragleave", "drop"].forEach((eventName) => {
+      drop.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        drop.classList.remove("is-dragging");
+      });
+    });
+    drop.addEventListener("drop", (event) => {
+      const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (!file) return;
+      try {
+        const transfer = new DataTransfer();
+        transfer.items.add(file);
+        fileInput.files = transfer.files;
+      } catch {
+        /* The preview still works if the browser refuses to write input.files. */
+      }
+      handleFile(file);
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const author = $("#submission-author").value.trim();
+      const workTitle = $("#submission-work-title").value.trim();
+      const year = $("#submission-year").value.trim();
+      const promptValue = $("#submission-prompt").value.trim();
+      const contact = $("#submission-contact").value.trim();
+
+      if (!selectedFile || !author || !workTitle || !promptValue) {
+        setStatus((cfg.openCall.form && cfg.openCall.form.error) || "请先选择图片，并填写作者、作品名与提示词。", true);
+        return;
+      }
+      if (!configured) {
+        setStatus("投稿入口还没有接好，请先写邮件联系。", true);
+        return;
+      }
+
+      const body = [
+        `### 作者`,
+        author,
+        ``,
+        `### 作品名`,
+        workTitle,
+        ``,
+        `### 年份`,
+        year || "—",
+        ``,
+        `### 提示词`,
+        promptValue,
+        ``,
+        `### 联系方式`,
+        contact || "—",
+        ``,
+        `### 图片`,
+        `<!-- 把作品图片拖到这里（GitHub 会自动上传）。 -->`,
+        ``,
+        `<!-- 本地文件名：${selectedFile.name} -->`
+      ].join("\n");
+      const params = new URLSearchParams({
+        labels: github.submissionLabel || "submission",
+        title: `[投稿] ${workTitle} — ${author}`,
+        body
+      });
+      const repoUrl = `https://github.com/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}`;
+      const issueUrl = `${repoUrl}/issues/new?${params.toString()}`;
+      const link = document.createElement("a");
+      link.href = issueUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.style.display = "none";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setStatus((cfg.openCall.form && cfg.openCall.form.status) || "投稿页已打开。请把图片拖进正文，然后提交。");
+    });
+
+    if (!configured) {
+      setStatus("投稿入口还没有接好，请先写邮件联系。", true);
+      return;
+    }
+
+    function extractImage(body) {
+      if (!body) return "";
+      const markdown = body.match(/!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/i);
+      if (markdown) return markdown[1];
+      const html = body.match(/<img[^>]+src=["'](https?:\/\/[^"']+)["']/i);
+      return html ? html[1] : "";
+    }
+
+    function section(body, heading) {
+      if (!body) return "";
+      const pattern = new RegExp(`^###\\s*${heading}\\s*$`, "im");
+      const match = body.match(pattern);
+      if (!match || match.index == null) return "";
+      const rest = body.slice(match.index + match[0].length);
+      const next = rest.search(/^###\s+/m);
+      return (next >= 0 ? rest.slice(0, next) : rest).replace(/<!--[\s\S]*?-->/g, "").trim();
+    }
+
+    function loadCommunity() {
+      const grid = $("#community-grid");
+      const empty = $("#community-empty");
+      const count = $("#community-count");
+      if (!grid || !empty) return;
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 10000);
+      const labels = [github.submissionLabel || "submission", github.acceptedLabel || "accepted"].join(",");
+      const url = `https://api.github.com/repos/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}/issues?state=all&labels=${encodeURIComponent(labels)}&per_page=${Number(github.limit) || 12}`;
+      fetch(url, { headers: { Accept: "application/vnd.github+json" }, signal: controller.signal })
+        .then((response) => {
+          if (!response.ok) throw new Error(`GitHub ${response.status}`);
+          return response.json();
+        })
+        .then((issues) => {
+          const accepted = (Array.isArray(issues) ? issues : []).filter((issue) => {
+            return issue && !issue.pull_request && extractImage(issue.body);
+          });
+          if (!accepted.length) return;
+          const fragment = document.createDocumentFragment();
+          accepted.forEach((issue) => {
+            const issueTitle = String(issue.title || "").replace(/^\[(投稿|submission)\]\s*/i, "");
+            const workTitle = section(issue.body, "作品名") || issueTitle.split(/[—–-]/)[0].trim() || "未命名来稿";
+            const author = section(issue.body, "作者") || issue.user?.login || "匿名";
+            const year = section(issue.body, "年份") || "";
+            const promptValue = section(issue.body, "提示词") || section(issue.body, "作品说明") || "";
+            const imageUrl = extractImage(issue.body);
+            const card = document.createElement("a");
+            card.className = "community-card";
+            card.href = issue.html_url;
+            card.target = "_blank";
+            card.rel = "noopener noreferrer";
+            card.setAttribute("aria-label", `查看来稿：${workTitle}，作者 ${author}`);
+            const media = document.createElement("div");
+            media.className = "community-card__media";
+            const image = document.createElement("img");
+            image.src = imageUrl;
+            image.alt = `${workTitle} / ${author}`;
+            image.loading = "lazy";
+            image.decoding = "async";
+            media.append(image);
+            const body = document.createElement("div");
+            body.className = "community-card__body";
+            const title = document.createElement("h3");
+            title.textContent = workTitle;
+            const meta = document.createElement("span");
+            meta.className = "community-card__meta";
+            meta.textContent = `${author}${year ? " / " + year : ""}`;
+            body.append(title, meta);
+            if (promptValue) {
+              const prompt = document.createElement("p");
+              prompt.className = "community-card__prompt";
+              prompt.textContent = promptValue;
+              body.append(prompt);
+            }
+            card.append(media, body);
+            fragment.append(card);
+          });
+          if (!fragment.childNodes.length) return;
+          grid.replaceChildren(fragment);
+          grid.hidden = false;
+          empty.hidden = true;
+          if (count) count.textContent = pad(accepted.length);
+        })
+        .catch((error) => {
+          console.warn("Community submissions unavailable.", error);
+        })
+        .finally(() => {
+          window.clearTimeout(timeout);
+        });
+    }
+
+    loadCommunity();
+  }
+
   function initDiscussion() {
     const container = $("#discussion-container");
     const fallback = $("#discussion-fallback");
@@ -1362,6 +1829,8 @@
 
   function init() {
     populateContent();
+    initFragments();
+    initOpenCall();
     initDiscussion();
     bindEntry();
     bindSound();
