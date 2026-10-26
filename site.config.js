@@ -95,6 +95,22 @@ window.SITE_CONFIG = {
         position: "center"
       },
       {
+        image: "assets/img/work-bird-2.jpg",
+        alt: "白鸟、旧钟、蓝色地球与红色颜料组成的第二幅超现实拼贴",
+        title: "白鸟与旧钟 II",
+        en: "A BIRD IN TIME / II",
+        meta: "纸上 / 回声",
+        position: "center"
+      },
+      {
+        image: "assets/img/work-bird-3.jpg",
+        alt: "红蓝错位的白鸟、时钟与破裂地球拼贴",
+        title: "白鸟与旧钟 III",
+        en: "A BIRD IN TIME / III",
+        meta: "纸上 / 红移",
+        position: "center"
+      },
+      {
         image: "assets/img/work-painter.jpg",
         alt: "银白发角色在彩色颜料与模糊字母之间绘制花朵",
         title: "绘者",
@@ -178,13 +194,40 @@ window.SITE_CONFIG = {
   fragment: {
     eyebrow: "LIVE FRAGMENTS / 作品切片",
     title: "把一张画，\n拆回一句话。",
-    text: "每四秒，窗口会裁切到下一件作品。点击画面，它会碎成像素，露出生成它的提示词。",
-    hint: "点击拆解 / CLICK TO REVEAL PROMPT",
+    text: "每四秒，窗口会裁切到下一件作品。点击画面，它会碎成像素并切到下一张；提示词在下方单独打开。",
+    hint: "点击切换 / CLICK FOR NEXT",
     promptLabel: "PROMPT / 提示词",
+    promptCta: "提示词 / PROMPT",
     copy: "复制提示词",
     copied: "已复制",
     close: "返回画面",
-    interval: 4200
+    interval: 4200,
+    extraItems: [
+      {
+        id: "a-bird-in-time-ii",
+        title: "白鸟与旧钟 II",
+        en: "A Bird in Time / II",
+        year: "2026",
+        category: "综合材料 / 拼贴",
+        description: "同一只白鸟从纸的背面回来。钟面、地球和红色颜料换了一个顺序。",
+        prompt: "A surrealist mixed-media sketch on textured cream paper: a white dove with intricate blue contour lines, a Roman-numeral pocket watch, a cracked deep-blue globe, scarlet pigment splashes, architectural fragments, a small fish plate, fine ink hatching, muted teal and coral palette, quiet archival collage, high detail.",
+        image: "assets/img/work-bird-2.jpg",
+        alt: "白鸟与旧钟 II：白鸟、钟面、蓝色地球与红色颜料的拼贴",
+        position: "center"
+      },
+      {
+        id: "a-bird-in-time-iii",
+        title: "白鸟与旧钟 III",
+        en: "A Bird in Time / III",
+        year: "2026",
+        category: "综合材料 / 拼贴",
+        description: "红色与青色在纸上错位，像一段被重复播放的记忆。",
+        prompt: "A glitched mixed-media collage: a white dove drawn in blue linework over a pale paper field, a vintage clock face, a blue cracked globe, red paint streaks and chromatic offset, transparent geometric frames, a small fish plate, cyan and vermilion duotone, editorial surrealism, high detail.",
+        image: "assets/img/work-bird-3.jpg",
+        alt: "白鸟与旧钟 III：红蓝错位的白鸟、时钟与地球",
+        position: "center"
+      }
+    ]
   },
 
   openCall: {
@@ -307,7 +350,27 @@ window.SITE_CONFIG = {
     lede: "这一格暂时空着。等下一个世界，从雨里长出来。",
     frameLabel: "RESERVED / 预留",
     frameMeta: "NO WORK YET / 等待抵达",
-    ghost: "未至"
+    ghost: "未至",
+    motionEyebrow: "MOTION STUDIES / 动态新作",
+    motionTitle: "会动的，先放在这里。",
+    videos: [
+      {
+        src: "assets/video/cats-tower-1.mp4",
+        poster: "assets/img/cats-tower-1.jpg",
+        title: "猫塔 I",
+        en: "CAT TOWER I",
+        meta: "MOTION STUDY / 05s",
+        alt: "四只颜色不同的猫叠成一座高高的猫塔"
+      },
+      {
+        src: "assets/video/cats-tower-2.mp4",
+        poster: "assets/img/cats-tower-2.jpg",
+        title: "猫塔 II",
+        en: "CAT TOWER II",
+        meta: "MOTION STUDY / 05s",
+        alt: "四只猫在纸面上叠成塔，蓝色猫抱着毛线球"
+      }
+    ]
   },
 
   discussion: {

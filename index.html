@@ -248,7 +248,7 @@
 
         <div class="hero__slideshow" aria-label="首页作品轮播">
           <div class="hero__slide-copy">
-            <span class="hero__slide-count" id="hero-count">01 <i>/ 04</i></span>
+            <span class="hero__slide-count" id="hero-count">01 <i>/ 06</i></span>
             <div>
               <p id="hero-slide-title">门</p>
               <span id="hero-slide-en">THE DOOR — 海面 / 06:17</span>
@@ -284,9 +284,9 @@
           <div class="works__feature-copy">
             <p class="eyebrow"><span>01 /</span> <span id="fragment-eyebrow">LIVE FRAGMENTS / 作品切片</span></p>
             <h3 class="works__feature-title" id="fragment-copy-title">把一张画，拆回一句话。</h3>
-            <p class="works__feature-text" id="fragment-copy-text">每四秒，窗口会裁切到下一件作品。点击画面，它会碎成像素，露出生成它的提示词。</p>
+            <p class="works__feature-text" id="fragment-copy-text">每四秒，窗口会裁切到下一件作品。点击画面，它会碎成像素并切到下一张；提示词在下方单独打开。</p>
             <div class="works__feature-foot">
-              <span>04 FRAMES</span><span>04 PROMPTS</span><span>AUTO 04S</span>
+              <span>06 FRAMES</span><span>06 PROMPTS</span><span>AUTO 04S</span>
             </div>
           </div>
 
@@ -297,8 +297,8 @@
               <div class="fragment__shade" aria-hidden="true"></div>
               <button class="fragment__trigger" id="fragment-trigger" type="button" aria-label="拆解画面，查看这件作品的提示词"></button>
               <div class="fragment__hud" aria-hidden="true">
-                <span id="fragment-count">01 / 04</span>
-                <span id="fragment-hint">点击拆解 / CLICK TO REVEAL PROMPT</span>
+                <span id="fragment-count">01 / 06</span>
+                <span id="fragment-hint">点击切换 / CLICK FOR NEXT</span>
               </div>
               <div class="fragment__caption" aria-hidden="true">
                 <span id="fragment-en">A BIRD IN TIME</span>
@@ -322,7 +322,8 @@
             </div>
             <div class="fragment__bar">
               <div class="fragment__dots" id="fragment-dots" role="group" aria-label="选择切片"></div>
-              <span class="fragment__bar-note">CLICK THE FRAME TO DECONSTRUCT</span>
+              <button class="fragment__prompt-trigger" id="fragment-prompt-trigger" type="button">提示词 / PROMPT</button>
+              <span class="fragment__bar-note">CLICK THE FRAME TO SWITCH</span>
             </div>
           </div>
         </div>
@@ -429,6 +430,14 @@
             <p id="future-frame-label">RESERVED / 预留</p>
             <small id="future-frame-meta">NO WORK YET / 等待抵达</small>
           </div>
+        </div>
+
+        <div class="future__motion reveal" id="future-motion" hidden>
+          <div class="future__motion-head">
+            <p class="eyebrow" id="future-motion-eyebrow">MOTION STUDIES / 动态新作</p>
+            <h3 id="future-motion-title">会动的，先放在这里。</h3>
+          </div>
+          <div class="future__motion-grid" id="future-motion-grid"></div>
         </div>
       </section>
 

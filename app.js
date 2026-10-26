@@ -153,6 +153,7 @@
     setText("future-frame-label", cfg.future.frameLabel);
     setText("future-frame-meta", cfg.future.frameMeta);
     setText("future-ghost", cfg.future.ghost);
+    renderFutureVideos();
 
     // Discussion board.
     setText("discussion-eyebrow", cfg.discussion.eyebrow);
@@ -241,6 +242,7 @@
     setText("fragment-copy-title", cfg.fragment.title);
     setText("fragment-copy-text", cfg.fragment.text);
     setText("fragment-hint", cfg.fragment.hint);
+    setText("fragment-prompt-trigger", cfg.fragment.promptCta || "提示词 / PROMPT");
     setText("fragment-prompt-label", cfg.fragment.promptLabel);
     setText("fragment-copy", cfg.fragment.copy);
     setText("open-call-eyebrow", cfg.openCall.eyebrow);
@@ -1228,6 +1230,68 @@
     });
   }
 
+  function renderFutureVideos() {
+    const root = $("#future-motion");
+    const grid = $("#future-motion-grid");
+    const videos = (cfg.future && cfg.future.videos) || [];
+    if (!root || !grid || !videos.length) return;
+    setText("future-motion-eyebrow", cfg.future.motionEyebrow || "MOTION STUDIES / 动态新作");
+    setText("future-motion-title", cfg.future.motionTitle || "会动的，先放在这里。");
+    grid.replaceChildren();
+    videos.forEach((item) => {
+      const figure = document.createElement("figure");
+      figure.className = "future-video";
+      const video = document.createElement("video");
+      video.src = item.src;
+      if (item.poster) video.poster = item.poster;
+      video.muted = true;
+      video.loop = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+      video.setAttribute("aria-label", item.alt || item.title || "动态作品");
+      const body = document.createElement("figcaption");
+      body.className = "future-video__caption";
+      const title = document.createElement("span");
+      title.className = "future-video__title";
+      title.textContent = item.title || "";
+      const en = document.createElement("span");
+      en.className = "future-video__en";
+      en.textContent = item.en || "";
+      const meta = document.createElement("span");
+      meta.className = "future-video__meta";
+      meta.textContent = item.meta || "";
+      body.append(title, en, meta);
+      figure.append(video, body);
+      grid.append(figure);
+    });
+    const observer = "IntersectionObserver" in window
+      ? new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            const video = entry.target;
+            if (entry.isIntersecting) {
+              const play = video.play();
+              if (play && typeof play.catch === "function") play.catch(() => {});
+            } else {
+              video.pause();
+            }
+          });
+        }, { threshold: 0.25 })
+      : null;
+    grid.querySelectorAll("video").forEach((video) => {
+      video.addEventListener("click", () => {
+        if (video.paused) {
+          const play = video.play();
+          if (play && typeof play.catch === "function") play.catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+      if (observer) observer.observe(video);
+    });
+    root.hidden = false;
+  }
+
   function initFragments() {
     const viewer = $("#fragment-viewer");
     const frame = $("#fragment-frame");
@@ -1241,9 +1305,17 @@
     const promptMeta = $("#fragment-prompt-meta");
     const copyButton = $("#fragment-copy");
     const closeButton = $("#fragment-close");
+    const promptTrigger = $("#fragment-prompt-trigger");
     if (!viewer || !frame || !image || !trigger || !tiles || !prompt || !dots) return;
 
-    const items = (cfg.works.items || []).filter((item) => item && item.image && item.prompt);
+    const baseWorks = (cfg.works.items || []).filter((item) => item && item.image && item.prompt);
+    const birdWorks = baseWorks.filter((item) => item.id === "a-bird-in-time");
+    const otherWorks = baseWorks.filter((item) => item.id !== "a-bird-in-time");
+    const items = [
+      ...birdWorks,
+      ...((cfg.fragment && cfg.fragment.extraItems) || []),
+      ...otherWorks
+    ].filter((item) => item && item.image && item.prompt);
     if (!items.length) return;
 
     const local = { index: 0, open: false, animating: false, visible: false, timer: null, focus: null };
@@ -1273,7 +1345,8 @@
       promptTitle.textContent = item.title;
       promptText.textContent = item.prompt;
       promptMeta.textContent = `${item.category || ""}${item.year ? " / " + item.year : ""}`;
-      trigger.setAttribute("aria-label", `拆解「${item.title}」，查看提示词`);
+      trigger.setAttribute("aria-label", `切换到下一张：${items[(local.index + 1) % items.length].title}`);
+      if (promptTrigger) promptTrigger.setAttribute("aria-label", `查看「${item.title}」的提示词`);
       Array.from(dots.children).forEach((dot, dotIndex) => {
         dot.classList.toggle("is-active", dotIndex === local.index);
         dot.setAttribute("aria-current", dotIndex === local.index ? "true" : "false");
@@ -1341,13 +1414,35 @@
       return true;
     }
 
+    function clearTiles() {
+      frame.classList.remove("is-deconstructing");
+      tiles.classList.remove("is-active");
+      tiles.replaceChildren();
+    }
+
+    function dissolve(onDone) {
+      if (local.open || local.animating) return;
+      local.animating = true;
+      local.focus = document.activeElement;
+      stopAuto();
+      trigger.disabled = true;
+      if (reducedMotion.matches || !buildTiles()) {
+        clearTiles();
+        onDone();
+        return;
+      }
+      frame.classList.add("is-deconstructing");
+      window.setTimeout(() => {
+        clearTiles();
+        onDone();
+      }, 980);
+    }
+
     function showPrompt() {
       local.animating = false;
       local.open = true;
       stopAuto();
-      frame.classList.remove("is-deconstructing");
-      tiles.classList.remove("is-active");
-      tiles.replaceChildren();
+      clearTiles();
       prompt.hidden = false;
       frame.classList.add("is-prompt-open");
       trigger.disabled = true;
@@ -1358,20 +1453,20 @@
 
     function openPrompt() {
       if (local.open || local.animating) return;
-      local.animating = true;
-      local.focus = document.activeElement;
-      stopAuto();
-      trigger.disabled = true;
-      if (reducedMotion.matches) {
-        showPrompt();
-        return;
-      }
-      frame.classList.add("is-deconstructing");
-      if (!buildTiles()) {
-        showPrompt();
-        return;
-      }
-      window.setTimeout(showPrompt, 980);
+      dissolve(showPrompt);
+    }
+
+    function advance() {
+      if (local.open || local.animating) return;
+      dissolve(() => {
+        show(local.index + 1);
+        local.animating = false;
+        local.open = false;
+        trigger.disabled = false;
+        trigger.tabIndex = 0;
+        trigger.focus({ preventScroll: true });
+        startAuto();
+      });
     }
 
     function closePrompt() {
@@ -1405,7 +1500,8 @@
       }
     }
 
-    trigger.addEventListener("click", openPrompt);
+    trigger.addEventListener("click", advance);
+    if (promptTrigger) promptTrigger.addEventListener("click", openPrompt);
     closeButton.addEventListener("click", closePrompt);
     copyButton.addEventListener("click", copyPrompt);
     prompt.addEventListener("keydown", (event) => {
